@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "840729318049",
+    "firebase_url": "https://concat-smartfarm.firebaseio.com",
+    "project_id": "concat-smartfarm",
+    "storage_bucket": "concat-smartfarm.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:840729318049:android:539e79363a0328377416e0",
+        "android_client_info": {
+          "package_name": "com.concat.concatsmartfarmproj"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "840729318049-k685f4g592i2jjkpq4d9unla57uduahb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAWp17jTg3fAMvxG0T-rXsX8pvfJsaFrZE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "840729318049-k685f4g592i2jjkpq4d9unla57uduahb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
