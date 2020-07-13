@@ -37,3 +37,13 @@
     http://blog.naver.com/PostView.nhn?blogId=ubicomputing&logNo=220603948881
 
   문제: device 찾지 못한다고도 했음; 해결: 저항 추가 회로로 구성하여 해결
+  
+  
+## 모듈 목록 참조 사이트
+  
+- ##### 이더넷 모듈(ENC28J60)
+  
+  - 이더넷모듈(ENC28J60)의 사용 - 설정,웹서버,트위터,웹클라이언트
+
+    https://deneb21.tistory.com/284
+  
