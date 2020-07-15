@@ -1,3 +1,0 @@
-[submodule "src/back-end"]
-	path = src/back-end
-	url = https://github.com/joshua-dev/concat
