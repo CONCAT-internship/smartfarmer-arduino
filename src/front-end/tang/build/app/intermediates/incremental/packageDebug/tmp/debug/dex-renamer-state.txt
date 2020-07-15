@@ -1,4 +1,0 @@
-#Mon Jul 06 03:13:12 KST 2020
-base.0=/Users/taehoonkim/Documents/taehoon/concat_smartfarm_proj/build/app/intermediates/dex/debug/mergeDexDebug/out/classes.dex
-path.0=classes.dex
-renamed.0=classes.dex
