@@ -57,3 +57,14 @@
   - 이더넷모듈(ENC28J60)의 사용 - 설정,웹서버,트위터,웹클라이언트
 
     https://deneb21.tistory.com/284
+
+- ##### TDS 센서: 양액관리
+
+  https://wiki.dfrobot.com/Gravity__Analog_TDS_Sensor___Meter_For_Arduino_SKU__SEN0244
+
+- ##### 수위센서
+
+  - Liquid level sensor
+
+    https://wiki.dfrobot.com/Liquid_Level_Sensor-FS-IR02_SKU__SEN0205
+
