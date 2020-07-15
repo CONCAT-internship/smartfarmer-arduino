@@ -6,5 +6,15 @@
 
     https://www.thethingsnetwork.org/forum/t/arduino-has-a-unique-id/21415
 
-    
+- ##### Http 통신
+
+  - Ethercard GET 예제
+
+    https://www.aelius.com/njh/ethercard/persistence_8ino-example.html#a16
+
+  - Ethercard POST 예제
+
+    https://stackoverflow.com/questions/17791876/sending-http-post-request-with-arduino-and-enc28j60-ethernet-lan-network-module
+
+  
 
