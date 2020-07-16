@@ -4,6 +4,8 @@ package smartfarm
 
 import "time"
 
+// [Start smart_farm_sensor_data_struct]
+
 // SensorData represents a single document of smartfarm sensor data collection.
 type SensorData struct {
 	UUID                   string    `json:"uuid"`
@@ -20,6 +22,8 @@ type SensorData struct {
 	UnixTime               int64     `json:"unix_time"`
 	LocalTime              time.Time `json:"local_time"`
 }
+
+// [End smart_farm_sensor_data_struct]
 
 // setTime sets the time of sensor data.
 func (s *SensorData) setTime() {
