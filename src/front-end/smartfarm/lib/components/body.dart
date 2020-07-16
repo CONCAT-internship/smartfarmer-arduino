@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:smartfarm/constants/smartfarmer_color.dart';
+import 'package:smartfarm/constants/smartfarmer_constants.dart';
+import 'header.dart';
 
 class Body extends StatelessWidget {
   @override
@@ -9,88 +10,17 @@ class Body extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Container(
-            height: size.height * 0.71,
+          HeaderWithGraph(size: size),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 25.0, vertical: 30.0),
             child: Stack(
-              children: <Widget>[
-                Container(
-                  height: size.height * 0.3,
-                  decoration: BoxDecoration(
-                    color: smartfarmer_primarycolor,
-                    borderRadius: BorderRadius.only(
-                      bottomRight: Radius.circular(36),
-                      bottomLeft: Radius.circular(36),
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.symmetric(
-                      horizontal: size.width * 0.06,
-                      vertical: size.height * 0.03),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Text(
-                            '김태훈님',
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 30.0,
-                                fontWeight: FontWeight.bold),
-                          ),
-                          SizedBox(
-                            height: 15.0,
-                          ),
-                          Text(
-                            '당신의 농장은 제껍니다',
-                            style:
-                            TextStyle(color: Colors.white, fontSize: 14.0),
-                          ),
-                        ],
-                      ), //사용자 이름 출력
-
-
-                      Row(
-                        children: [
-                          Material(
-                            elevation: 0,
-                            borderRadius: BorderRadius.circular(100.0),
-                            color: Colors.redAccent,
-                            child: MaterialButton(
-                              onPressed: () {},
-                              padding: EdgeInsets.symmetric(
-                                  vertical: 10.0, horizontal: 30.0),
-                              child: Text(
-                                "밸브",
-                                style: TextStyle(
-                                    fontSize: 16.0, color: Colors.white),
-                              ),
-                            ),
-                          ),
-                          SizedBox(
-                            width: 10,
-                          ),
-                          Material(
-                            elevation: 0,
-                            borderRadius: BorderRadius.circular(100.0),
-                            color: Colors.redAccent,
-                            child: MaterialButton(
-                              onPressed: () {},
-                              padding: EdgeInsets.symmetric(
-                                  vertical: 10.0, horizontal: 30.0),
-                              child: Text(
-                                "FAN",
-                                style: TextStyle(
-                                    fontSize: 16.0, color: Colors.white),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ), //밸브, 팬 on/off Btn
-                    ],
+              children: [
+                Text(
+                  '스마트팜 실시간 정보',
+                  style: TextStyle(
+                    color: Colors.black.withOpacity(0.7),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20.0,
                   ),
                 ),
                 Positioned(
@@ -98,33 +28,11 @@ class Body extends StatelessWidget {
                   left: 0,
                   right: 0,
                   child: Container(
-                    margin: EdgeInsets.symmetric(horizontal: 25),
-                    height: 370,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          offset: Offset(0.0, 3.0),
-                          blurRadius: 15.0,
-                          color: smartfarmer_primarycolor.withOpacity(0.23),
-                        ),
-                      ],
-                    ),
+                    height: 7,
+                    color: smartfarmer_primarycolor.withOpacity(0.2),
                   ),
-                ),
+                )
               ],
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 25.0, vertical: 30.0),
-            child: Text(
-              '스마트팜 실시간 정보',
-              style: TextStyle(
-                color: Colors.black.withOpacity(0.7),
-                fontWeight: FontWeight.bold,
-                fontSize: 20.0,
-              ),
             ),
           ),
           Padding(
@@ -133,7 +41,28 @@ class Body extends StatelessWidget {
               height: 150.0,
               child: ListView(
                 scrollDirection: Axis.horizontal,
-                children: <Widget>[],
+                children: <Widget>[
+                  FarmInfo_Card(
+                    title: '온도',
+                    value: 30.0,
+                    color: Colors.orange,
+                  ),
+                  FarmInfo_Card(
+                    title: '습도',
+                    value: 40.0,
+                    color: Colors.pinkAccent,
+                  ),
+                  FarmInfo_Card(
+                    title: '내수',
+                    value: 80.0,
+                    color: Colors.blue,
+                  ),
+                  FarmInfo_Card(
+                    title: '내수',
+                    value: 80.0,
+                    color: Colors.purple,
+                  ),
+                ],
               ),
             ),
           )
@@ -158,9 +87,26 @@ class FarmInfo_Card extends StatelessWidget {
         width: 120,
         decoration: BoxDecoration(
           color: color,
+          borderRadius: BorderRadius.all(Radius.circular(25.0)),
         ),
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 30.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text(title,
+                  style: TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.bold)),
+              SizedBox(
+                height: 30,
+              ),
+              Text('$value',
+                  style: TextStyle(
+                      fontSize: 22.0,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold)),
+            ],
+          ),
         ),
       ),
     );

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:smartfarm/components/body.dart';
-import 'package:smartfarm/constants/smartfarmer_color.dart';
+import 'package:smartfarm/constants/smartfarmer_constants.dart';
 
 class InfoPage extends StatefulWidget {
   @override
@@ -23,8 +24,7 @@ class _InfoPageState extends State<InfoPage> {
       backgroundColor: smartfarmer_primarycolor,
       elevation: 0,
       leading: IconButton(
-        icon: Icon(Icons.menu),
-        color: Colors.white,
+        icon: SvgPicture.asset("assets/icons/menu.svg"),
         onPressed: () {},
       ),
       actions: <Widget>[
