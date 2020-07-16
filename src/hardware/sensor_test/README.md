@@ -28,7 +28,7 @@
 
     https://zelkun.tistory.com/entry/011-Arduino-아두이노-CDS-Sensor-Module-조도센서모듈
 
-- ##### 온도센서
+- ##### 수온센서
 
   범위: -55 ~ 120 도
 
@@ -67,4 +67,10 @@
   - Liquid level sensor
 
     https://wiki.dfrobot.com/Liquid_Level_Sensor-FS-IR02_SKU__SEN0205
+
+- ##### 온습도 센서(DHT11)
+
+  - DHT11 온도 습도 센서 테스트
+
+    http://www.hardcopyworld.com/ngine/aduino/index.php/archives/190
 
