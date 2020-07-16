@@ -1,4 +1,4 @@
-# 콘캣 스마트팜 제작
+### Smart Farmer
 
-## 🤯
+Internship at [CONCAT.Inc](https://concat.kr) in summer, 2020
 
