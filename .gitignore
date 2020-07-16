@@ -7,11 +7,16 @@ ENV/
 env.bak/
 venv.bak/
 
-# Mac OS
+# [Start mac OS git ignore]
+
+# mac OS
 *.idea/
 *.DS_Store
 
-##Flutter##
+# [End mac OS git ignore]
+
+# [Start Flutter git ignore]
+
 # Flutter/Dart/Pub related
 **/doc/api/
 .dart_tool/
@@ -65,3 +70,25 @@ build/
 !**/ios/**/default.pbxuser
 !**/ios/**/default.perspectivev3
 !/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
+
+# [End Flutter git ignore]
+
+# [Start Go git ignore]
+
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+
+# Dependency directories (remove the comment below to include it)
+# vendor/
+
+# [End Go git ignore]
