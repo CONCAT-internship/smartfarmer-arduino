@@ -3,7 +3,6 @@ import 'package:smartfarm/constants/smartfarmer_constants.dart';
 
 import 'graph.dart';
 
-
 class HeaderWithGraph extends StatelessWidget {
   const HeaderWithGraph({
     Key key,
@@ -15,53 +14,52 @@ class HeaderWithGraph extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: size.height * 0.70,
+      width: double.infinity,
       child: Stack(
         children: <Widget>[
-          Container(
-            padding: EdgeInsets.only(
-              bottom: smartfarmer_padding + 45,
+          ClipPath(
+            clipper: CustomShapeClipper(),
+            child: Container(
+              height: 350.0,
+              decoration: BoxDecoration(color: smartfarmer_primarycolor),
             ),
-            height: size.height * 0.28,
-            decoration: BoxDecoration(
-              color: smartfarmer_primarycolor,
-              borderRadius: BorderRadius.only(
-                bottomRight: Radius.circular(36),
-                bottomLeft: Radius.circular(36),
-              ),
-            ),
+          ),
+          Padding(
+            padding: EdgeInsets.symmetric(
+                horizontal: smartfarmer_padding, vertical: 20.0),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                _userName(),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Text(
+                      '김태훈님',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 30.0,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(
+                      height: 8.0,
+                    ),
+                    Text(
+                      '당신 농장은 제껍니다.',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 14.0,
+                      ),
+                    ),
+                  ],
+                ),
 
-//                CircleAvatar(
-//                  //backgroundImage: AssetImage('assets/ogu.png'),
-//                  radius: 20.0,
-//                  backgroundColor: Colors.blue[600],
-//                ),
-                FlatButton(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  color: Color.fromRGBO(204, 255, 204, 1),
-                  onPressed: () {},
-                  child: Text(
-                    "밸브",
-                    style: TextStyle(color: Colors.grey[800]),
-                  ),
+                CircleAvatar(
+                  backgroundImage: AssetImage('assets/images/ogu.png'),
+                  radius: 20.0,
+                  backgroundColor: Colors.blue[600],
                 ),
-                FlatButton(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  color: Color.fromRGBO(204, 255, 204, 1),
-                  onPressed: () {},
-                  child: Text(
-                    "FAN",
-                    style: TextStyle(color: Colors.grey[800]),
-                  ),
-                ),
+
               ],
             ),
           ),
@@ -123,29 +121,20 @@ class HeaderWithGraph extends StatelessWidget {
       ),
     );
   }
-
-  Column _userName() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(
-          '김태훈님',
-          style: TextStyle(
-              color: Colors.white, fontSize: 30.0, fontWeight: FontWeight.bold),
-        ),
-        SizedBox(
-          height: 8.0,
-        ),
-        Text(
-          '당신 농장은 제껍니다.',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 14.0,
-          ),
-        ),
-      ],
-    );
-  }
 }
 
+class CustomShapeClipper extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    var path = Path();
+
+    path.lineTo(0.0, 390.0 - 200);
+    path.quadraticBezierTo(size.width / 2, 280, size.width, 390.0 - 200);
+    path.lineTo(size.width, 0.0);
+    path.close();
+    return path;
+  }
+
+  @override
+  bool shouldReclip(CustomClipper<Path> oldClipper) => true;
+}

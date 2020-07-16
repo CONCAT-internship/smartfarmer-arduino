@@ -12,7 +12,7 @@ class Body extends StatelessWidget {
         children: <Widget>[
           HeaderWithGraph(size: size),
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 25.0, vertical: 30.0),
+            padding: EdgeInsets.symmetric(horizontal: 25.0, vertical: 20.0),
             child: Stack(
               children: [
                 Text(
