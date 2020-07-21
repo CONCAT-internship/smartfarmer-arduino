@@ -1,4 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:smartfarm/components/sign_in.dart';
+import 'package:smartfarm/utils/snack_bar.dart';
 import '../constants/smartfarmer_constants.dart';
 
 class SignUp extends StatefulWidget {
@@ -7,6 +10,19 @@ class SignUp extends StatefulWidget {
 }
 
 class _SignUpState extends State<SignUp> {
+  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  TextEditingController _emailTEC = TextEditingController();
+  TextEditingController _pwTEC = TextEditingController();
+  TextEditingController _cpwTEC = TextEditingController();
+
+  @override
+  void dispose() {
+    _emailTEC.dispose();
+    _pwTEC.dispose();
+    _cpwTEC.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,35 +53,39 @@ class _SignUpState extends State<SignUp> {
                 horizontal: 40.0,
                 vertical: 120.0,
               ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Text(
-                    '가입하기',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: smartfarmer_auth_padding,
-                      fontWeight: FontWeight.bold,
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Text(
+                      '가입하기',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: smartfarmer_auth_padding,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                  SizedBox(
-                    height: smartfarmer_auth_padding,
-                  ),
-                  _emailTF(),
-                  SizedBox(
-                    height: smartfarmer_auth_padding,
-                  ),
-                  _buildPasswordTF(),
-                  SizedBox(
-                    height: smartfarmer_auth_padding,
-                  ),
-                  _ConfirmPasswordTF(),
-                  SizedBox(
-                    height: 20.0,
-                  ),
-                  _buildLoginBtn(),
-                  _buildSignupBtn(),
-                ],
+                    SizedBox(
+                      height: smartfarmer_auth_padding,
+                    ),
+                    _buildTF(
+                        "이메일", "이메일을 입력해주세요", _emailTEC, false, Icons.email),
+                    SizedBox(
+                      height: smartfarmer_auth_padding,
+                    ),
+                    _buildTF("비밀번호", "비밀번호를 입력해주세요", _pwTEC, true, Icons.lock),
+                    SizedBox(
+                      height: smartfarmer_auth_padding,
+                    ),
+                    _buildTF("비밀번호 확인", "비밀번호 확인", _cpwTEC, true, Icons.lock),
+                    SizedBox(
+                      height: 20.0,
+                    ),
+                    _buildLoginBtn(),
+                    _buildSignupBtn(),
+                  ],
+                ),
               ),
             ),
           )
@@ -74,48 +94,13 @@ class _SignUpState extends State<SignUp> {
     );
   }
 
-  Widget _emailTF() {
+  Widget _buildTF(String using, String hint, TextEditingController formkey,
+      bool obscure, IconData icon) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Text(
-          "Email",
-          style: kLabelStyle,
-        ),
-        SizedBox(
-          height: 10.0,
-        ),
-        Container(
-          alignment: Alignment.centerLeft,
-          decoration: kBoxDecorationStyle,
-          height: 60.0,
-          child: TextField(
-            keyboardType: TextInputType.emailAddress,
-            style: TextStyle(
-              color: Colors.white,
-            ),
-            decoration: InputDecoration(
-              border: InputBorder.none,
-              contentPadding: EdgeInsets.only(top: 14.0),
-              prefixIcon: Icon(
-                Icons.email,
-                color: Colors.white,
-              ),
-              hintText: '이메일을 입력해주세요',
-              hintStyle: kHintTextStyle,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildPasswordTF() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Text(
-          'Password',
+          using,
           style: kLabelStyle,
         ),
         SizedBox(height: 10.0),
@@ -123,8 +108,41 @@ class _SignUpState extends State<SignUp> {
           alignment: Alignment.centerLeft,
           decoration: kBoxDecorationStyle,
           height: 60.0,
-          child: TextField(
-            obscureText: true,
+          child: TextFormField(
+            controller: formkey,
+            validator: (String value) {
+              if (formkey == _emailTEC) {
+                // email textformfield
+                // ignore: missing_return
+                if (value.isEmpty || !value.contains("@")) {
+                  //Snackbar(context, "이메일을 작성해주세요");
+                  return "이메일을 작성해주세요";
+                } else if (value.contains(" ") || value.contains('\t')) {
+                  //Snackbar(context, "공백이 포함되어 있습니다");
+                  return "공백이 포함되어 있습니다";
+                }
+                return null;
+              } else if (formkey == _pwTEC) {
+                //비밀번호 textformfield
+                if (value.isEmpty) {
+                  //Snackbar(context, "비밀번호를 입력해주세요");
+                  return "비밀번호를 입력해주세요";
+                } else {
+                  return null;
+                }
+              } else {
+                //비밀번호 확인 textformfield
+                if (value.isEmpty) {
+                  //Snackbar(context, "비밀번호를 입력해주세요");
+                  return "비밀번호를 입력해주세요";
+                } else if (_pwTEC.text != value) {
+                  return "위에서 입력한 비밀번호랑 일치하지 않습니다";
+                } else {
+                  return null;
+                }
+              }
+            },
+            obscureText: obscure,
             style: TextStyle(
               color: Colors.white,
             ),
@@ -132,45 +150,14 @@ class _SignUpState extends State<SignUp> {
               border: InputBorder.none,
               contentPadding: EdgeInsets.only(top: 14.0),
               prefixIcon: Icon(
-                Icons.lock,
+                icon,
                 color: Colors.white,
               ),
-              hintText: '비밀번호를 입력해주세요',
+              hintText: hint,
               hintStyle: kHintTextStyle,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _ConfirmPasswordTF() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Text(
-          'Confirm Password',
-          style: kLabelStyle,
-        ),
-        SizedBox(height: 10.0),
-        Container(
-          alignment: Alignment.centerLeft,
-          decoration: kBoxDecorationStyle,
-          height: 60.0,
-          child: TextField(
-            obscureText: true,
-            style: TextStyle(
-              color: Colors.white,
-            ),
-            decoration: InputDecoration(
-              border: InputBorder.none,
-              contentPadding: EdgeInsets.only(top: 14.0),
-              prefixIcon: Icon(
-                Icons.lock,
+              errorStyle: TextStyle(
                 color: Colors.white,
               ),
-              hintText: '비밀번호 확인',
-              hintStyle: kHintTextStyle,
             ),
           ),
         ),
@@ -184,7 +171,11 @@ class _SignUpState extends State<SignUp> {
       width: double.infinity,
       child: RaisedButton(
         elevation: 5.0,
-        onPressed: () => print('Login Button Pressed'),
+        onPressed: () {
+          if (_formKey.currentState.validate()) {
+            _joinApp;
+          }
+        },
         padding: EdgeInsets.all(15.0),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(smartfarmer_auth_padding),
@@ -205,7 +196,10 @@ class _SignUpState extends State<SignUp> {
 
   Widget _buildSignupBtn() {
     return GestureDetector(
-      onTap: () => print('Sign Up Button Pressed'),
+      onTap: () {
+        final route = MaterialPageRoute(builder: (context) => SignIn());
+        Navigator.pushReplacement(context, route);
+      },
       child: RichText(
         text: TextSpan(
           children: [
@@ -229,5 +223,17 @@ class _SignUpState extends State<SignUp> {
         ),
       ),
     );
+  }
+
+  get _joinApp async {
+    final AuthResult authResult = await FirebaseAuth.instance
+        .createUserWithEmailAndPassword(
+            email: _emailTEC.text, password: _pwTEC.text);
+
+    final FirebaseUser firebaseUser = authResult.user;
+
+    if (firebaseUser == null) {
+      Snackbar(context, "잠시 뒤에 다시 시도해주세요");
+    }
   }
 }

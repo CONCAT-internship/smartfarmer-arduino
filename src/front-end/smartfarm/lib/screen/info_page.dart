@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:smartfarm/components/body.dart';
@@ -33,7 +34,9 @@ class _InfoPageState extends State<InfoPage> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
-        onPressed: (){},
+        onPressed: (){
+          FirebaseAuth.instance.signOut();
+        },
       ),
       appBar: buildAppBar(),
       backgroundColor: bgColor,

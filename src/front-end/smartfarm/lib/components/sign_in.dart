@@ -1,4 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:smartfarm/components/sign_up.dart';
+import 'package:smartfarm/utils/snack_bar.dart';
 
 import '../constants/smartfarmer_constants.dart';
 
@@ -9,20 +12,20 @@ class SignIn extends StatefulWidget {
 
 class _SignInState extends State<SignIn> {
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  TextEditingController _emailController = TextEditingController();
-  TextEditingController _pwController = TextEditingController();
+  TextEditingController _emailTEC = TextEditingController();
+  TextEditingController _pwTEC = TextEditingController();
 
   @override
   void dispose() {
-    _emailController.dispose();
-    _pwController.dispose();
+    _emailTEC.dispose();
+    _pwTEC.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: true,
+      //resizeToAvoidBottomInset: true,
       body: Stack(
         children: <Widget>[
           Container(
@@ -64,9 +67,9 @@ class _SignInState extends State<SignIn> {
                       ),
                     ),
                     SizedBox(height: 30,),
-                    _buildTF("이메일", "이메일을 입력해주세요", _emailController, false, Icons.email),
+                    _buildTF("이메일", "이메일을 입력해주세요", _emailTEC, false, Icons.email),
                     SizedBox(height: 30.0,),
-                    _buildTF("비밀번호", "비밀번호를 입력해주세요", _pwController, true, Icons.lock),
+                    _buildTF("비밀번호", "비밀번호를 입력해주세요", _pwTEC, true, Icons.lock),
                     _buildForgotPasswordBtn(),
                     _buildLoginBtn(),
                     _buildSignInWithText(),
@@ -79,42 +82,6 @@ class _SignInState extends State<SignIn> {
           )
         ],
       ),
-    );
-  }
-
-  Widget _emailTF() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Text(
-          "Email",
-          style: kLabelStyle,
-        ),
-        SizedBox(
-          height: 10.0,
-        ),
-        Container(
-          alignment: Alignment.centerLeft,
-          decoration: kBoxDecorationStyle,
-          height: 60.0,
-          child: TextField(
-            keyboardType: TextInputType.emailAddress,
-            style: TextStyle(
-              color: Colors.white,
-            ),
-            decoration: InputDecoration(
-              border: InputBorder.none,
-              contentPadding: EdgeInsets.only(top: 14.0),
-              prefixIcon: Icon(
-                Icons.email,
-                color: Colors.white,
-              ),
-              hintText: '이메일을 입력해주세요',
-              hintStyle: kHintTextStyle,
-            ),
-          ),
-        ),
-      ],
     );
   }
 
@@ -134,17 +101,20 @@ class _SignInState extends State<SignIn> {
           child: TextFormField(
             controller: formkey,
             validator: (String value){
-              if(formkey == _emailController){ // email textformfield
+              if(formkey == _emailTEC){ // email textformfield
                 // ignore: missing_return
                 if(value.isEmpty || !value.contains("@")){
-                  if(value.contains(' ')){
-                    return "공백을 빼주세요"; //특수문자 처리는 나중에
-                  }
-                  return "이메일을 작성해주십시오";
+                  //Snackbar(context, "이메일을 작성해주세요");
+                  return "이메일을 작성해주세요";
+                }else if (value.contains(" ") || value.contains('\t')){
+                  //Snackbar(context, "공백이 포함되어 있습니다");
+                  return "공백이 포함되어 있습니다";
                 }
                 return null;
               }else{ //비밀번호 textformfield
                 if(value.isEmpty){
+                  //Snackbar(context, "비밀번호를 입력해주세요");
+
                   return "비밀번호를 입력해주세요";
                 }else{
                   return null;
@@ -164,13 +134,15 @@ class _SignInState extends State<SignIn> {
               ),
               hintText: hint,
               hintStyle: kHintTextStyle,
+              errorStyle: TextStyle(
+                color: Colors.white,
+              ),
             ),
           ),
         ),
       ],
     );
   }
-
   Widget _buildForgotPasswordBtn() {
     return Container(
       alignment: Alignment.centerRight,
@@ -184,14 +156,17 @@ class _SignInState extends State<SignIn> {
       ),
     );
   }
-
   Widget _buildLoginBtn() {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 25.0),
       width: double.infinity,
       child: RaisedButton(
         elevation: 5.0,
-        onPressed: () => print('Login Button Pressed'),
+        onPressed: (){
+          if(_formKey.currentState.validate()){
+            _loginApp;
+          }
+        },
         padding: EdgeInsets.all(15.0),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(30.0),
@@ -209,7 +184,6 @@ class _SignInState extends State<SignIn> {
       ),
     );
   }
-
   Widget _buildSignInWithText() {
     return Column(
       children: <Widget>[
@@ -228,7 +202,6 @@ class _SignInState extends State<SignIn> {
       ],
     );
   }
-
   Widget _buildSocialBtn(Function onTap, AssetImage logo) {
     return GestureDetector(
       onTap: onTap,
@@ -252,7 +225,6 @@ class _SignInState extends State<SignIn> {
       ),
     );
   }
-
   Widget _buildSocialBtnRow() {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 30.0),
@@ -275,10 +247,12 @@ class _SignInState extends State<SignIn> {
       ),
     );
   }
-
   Widget _buildSignupBtn() {
     return GestureDetector(
-      onTap: () => print('Sign Up Button Pressed'),
+      onTap: () {
+        final route = MaterialPageRoute(builder: (context) => SignUp());
+        Navigator.pushReplacement(context, route);
+      },
       child: RichText(
         text: TextSpan(
           children: [
@@ -302,5 +276,17 @@ class _SignInState extends State<SignIn> {
         ),
       ),
     );
+  }
+
+  get _loginApp async{
+    final AuthResult authResult = await FirebaseAuth.instance
+        .signInWithEmailAndPassword(
+        email: _emailTEC.text, password: _pwTEC.text);
+
+    final FirebaseUser firebaseUser = authResult.user;
+
+    if (firebaseUser == null) {
+      Snackbar(context, "잠시 뒤에 다시 시도해주세요");
+    }
   }
 }
