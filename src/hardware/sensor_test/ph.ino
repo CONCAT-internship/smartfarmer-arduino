@@ -1,22 +1,13 @@
-/*
- # This sample code is used to test the pH meter Pro V1.0.
- # Editor : YouYou
- # Ver    : 1.0
- # Product: analog pH meter Pro
- # SKU    : SEN0169
-*/
-#define SensorPin A0            //pH meter Analog output to Arduino Analog Input 0
-#define Offset -3.70            //deviation compensate
-#define LED 13
-#define samplingInterval 20
-#define printInterval 800
-#define ArrayLenth  40    //times of collection
-int pHArray[ArrayLenth];   //Store the average value of the sensor feedback
+#define board_rate 115200
+#define pH_pin A1            //pH meter Analog output to Arduino Analog Input 0
+#define pH_Offset -3.70            //deviation compensate
+
+int pHArray[40];   //Store the average value of the sensor feedback
 int pHArrayIndex=0;
+
 void setup(void)
 {
-  pinMode(LED,OUTPUT);
-  Serial.begin(9600);
+  Serial.begin(board_rate);
   Serial.println("pH meter experiment!");    //Test the serial monitor
 }
 void loop(void)
@@ -24,22 +15,21 @@ void loop(void)
   static unsigned long samplingTime = millis();
   static unsigned long printTime = millis();
   static float pHValue,voltage;
-  if(millis()-samplingTime > samplingInterval)
+  if(millis()-samplingTime > 20)
   {
-      pHArray[pHArrayIndex++]=analogRead(SensorPin);
-      if(pHArrayIndex==ArrayLenth)pHArrayIndex=0;
-      voltage = avergearray(pHArray, ArrayLenth)*5.0/1024;
-      pHValue = 12.5*voltage+Offset;
-      samplingTime=millis();
+    pHArray[pHArrayIndex++]=analogRead(pH_pin);
+    if(pHArrayIndex==40)pHArrayIndex=0;
+    voltage = avergearray(pHArray, 40)*5.0/1024;
+    pHValue = 12.5*voltage+pH_Offset;
+    samplingTime=millis();
   }
-  if(millis() - printTime > printInterval)   //Every 800 milliseconds, print a numerical, convert the state of the LED indicator
+  if(millis() - printTime > 800)   //Every 800 milliseconds, print a numerical
   {
     Serial.print("Voltage:");
-        Serial.print(voltage,2);
-        Serial.print("    pH value: ");
+    Serial.print(voltage,2);
+    Serial.print("    pH value: ");
     Serial.println(pHValue,2);
-        digitalWrite(LED,digitalRead(LED)^1);
-        printTime=millis();
+    printTime=millis();
   }
 }
 double avergearray(int* arr, int number){
@@ -57,7 +47,8 @@ double avergearray(int* arr, int number){
     }
     avg = amount/number;
     return avg;
-  }else{
+  }
+  else{
     if(arr[0]<arr[1]){
       min = arr[0];max=arr[1];
     }

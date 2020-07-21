@@ -20,7 +20,7 @@ String uuid = "57 39 39 31 34 31 10 15 0E";
 float liquid_temperature;
 float temperature;
 float humidity;
-float liquid_flow_rate = 25.51;
+float liquid_flow_rate = 25.5;
 float ph = 7.1;
 float ec = 0.12;
 int light;
@@ -63,35 +63,72 @@ void loop () {
     Serial.println();
     Serial.println("<<< REQ ");
 
-    liquid_temperature = round(read_liquid_temperature()*100)/100.00;
+    liquid_temperature = round(read_liquid_temperature()*10)/10.0;
+    
     light = read_light();
     light = map(light, 0, 1023, 100, 0);
+    
     dht11.read(humidity, temperature);
+    temperature = round(temperature*10)/10.0;
+    
     liquid_level = read_liquid_level();
     
     //포트번호
     ether.hisport = 5000;
     byte sd = stash.create();
     String jsondata = "";
-    StaticJsonBuffer<170> jb;
+    //StaticJsonBuffer<320> jb;
     //DynamicJsonBuffer jb;
-    JsonObject& obj = jb.createObject();
+    //JsonObject& obj = jb.createObject();
+
+    const size_t capacity = JSON_OBJECT_SIZE(12);
+
+    //DynamicJsonDocument obj(2048);
+    StaticJsonDocument<64> obj;
     
-    obj["uuid"] = uuid;
-    obj["liquid_temperature"] = liquid_temperature;
-    obj["temperature"] = temperature;
-    obj["humidity"] = humidity;
-    obj["liquid_flow_rate"] = liquid_flow_rate;
-    obj["ph"] = ph;
-    obj["ec"] = ec;
-    obj["light"] = light;
-    obj["liquid_level"] = liquid_level;
-    obj["valve"] = valve;
-    obj["led"] = led;
-    obj["fan"] = fan;
+    //obj["uuid"] = uuid;
+    //obj["liquid_temperature"] = liquid_temperature;
+    //obj["temperature"] = temperature;
+    //obj["humidity"] = humidity;
+    //obj["liquid_flow_rate"] = liquid_flow_rate;
+    //obj["ph"] = ph;
+    //obj["ec"] = ec;
+    //obj["light"] = light;
+    //obj["liquid_level"] = liquid_level;
+    //obj["valve"] = valve;
+    //obj["led"] = led;
+    //obj["fan"] = fan;
+    //serializeJson(obj, jsondata);
+    jsondata += "{\"uuid\":\"";
+    jsondata += uuid;
+    jsondata += "\",\"liquid_temperature\":";
+    jsondata += liquid_temperature;
+    jsondata += ",\"temperature\":";
+    jsondata += temperature;
+    jsondata += ",\"humidity\":";
+    jsondata += humidity;
+    jsondata += ",\"liquid_flow_rate\":";
+    jsondata += liquid_flow_rate;
+    jsondata += ",\"ph\":";
+    jsondata += ph;
+    jsondata += ",\"ec\":";
+    jsondata += ec;
+    jsondata += ",\"light\":";
+    jsondata += light;
+    jsondata += ",\"liquid_level\":";
+    jsondata += liquid_level;
+    jsondata += ",\"valve\":";
+    jsondata += valve;
+    jsondata += ",\"led\":";
+    jsondata += led;
+    jsondata += ",\"fan\":";
+    jsondata += fan;
     
     
-    obj.printTo(jsondata);
+    jsondata += "}";
+    //\",\"liquid_temperature\":21,\"temperature\":29,\"humidity\":67,\"liquid_flow_rate\":25.51,\"ph\":7.1,\"ec\":0.12,\"light\":100,\"liquid_leve\":0,\"velve\":0, \"led\":0, \"fan\":0}"
+    //obj.printTo(jsondata);
+    
     Serial.println(jsondata);
     stash.print(jsondata);
     //stash.print("light=");

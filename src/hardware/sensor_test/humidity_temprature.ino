@@ -1,25 +1,27 @@
-#include <ArduinoJson.h>
 #include <DHT11.h>
-int pin=4;
+
+#define board_rate 115200
+#define temperature_humidity_pin 4
+
 DHT11 dht11(pin); 
+
+float temperature;
+float humidity;
+
 void setup()
 {
-  Serial.begin(9600);
-  while (!Serial) {
-      ; // wait for serial port to connect. Needed for Leonardo only
-    }
+  Serial.begin(board_rate);
 }
 
 void loop()
 {
   int err;
-  float temp, humi;
   if((err=dht11.read(humi, temp))==0)
   {
     Serial.print("temperature:");
-    Serial.print(temp);
+    Serial.print(temperature);
     Serial.print(" humidity:");
-    Serial.print(humi);
+    Serial.print(humidity);
     Serial.println();
   }
   else

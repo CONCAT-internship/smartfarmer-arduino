@@ -1,13 +1,17 @@
+#define board_rate 115200
+#define light_pin A0
+
+int light
+
 void setup(){
-
-    Serial.begin(9600);
-
+  Serial.begin(board_rate);
 }
 
 void loop(){
+  int light = read_light();
+  Serial.println(light);
+}
 
-    int d = analogRead(A0);
-
-    Serial.println(d);
-
+int read_light(){
+  return analogRead(light_pin);
 }
