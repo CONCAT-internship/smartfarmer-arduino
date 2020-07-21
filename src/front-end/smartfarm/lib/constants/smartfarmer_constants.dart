@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 const Color smartfarmer_primarycolor = Color.fromRGBO(56, 182, 60, 1);//Color(0xFF0C9869);
 const Color smartfarmer_bgcolor = Color.fromRGBO(244, 244, 244, 1);
 const double smartfarmer_padding = 25.0;
+const double smartfarmer_auth_padding = 30.0;
 
 var appBarColor = Color(0xFF17294b);
 
@@ -52,3 +53,4 @@ final kBoxDecorationStyle = BoxDecoration(
     ),
   ],
 );
+

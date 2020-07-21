@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:smartfarm/constants/smartfarmer_constants.dart';
+import '../constants/smartfarmer_constants.dart';
 
-class LoginPage extends StatefulWidget {
+class SignUp extends StatefulWidget {
   @override
-  _LoginPageState createState() => _LoginPageState();
+  _SignUpState createState() => _SignUpState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _SignUpState extends State<SignUp> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,25 +41,29 @@ class _LoginPageState extends State<LoginPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   Text(
-                    '로그인',
+                    '가입하기',
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: 30.0,
+                      fontSize: smartfarmer_auth_padding,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   SizedBox(
-                    height: 30,
+                    height: smartfarmer_auth_padding,
                   ),
                   _emailTF(),
                   SizedBox(
-                    height: 30.0,
+                    height: smartfarmer_auth_padding,
                   ),
                   _buildPasswordTF(),
-                  _buildForgotPasswordBtn(),
+                  SizedBox(
+                    height: smartfarmer_auth_padding,
+                  ),
+                  _ConfirmPasswordTF(),
+                  SizedBox(
+                    height: 20.0,
+                  ),
                   _buildLoginBtn(),
-                  _buildSignInWithText(),
-                  _buildSocialBtnRow(),
                   _buildSignupBtn(),
                 ],
               ),
@@ -89,7 +93,6 @@ class _LoginPageState extends State<LoginPage> {
             keyboardType: TextInputType.emailAddress,
             style: TextStyle(
               color: Colors.white,
-              fontFamily: 'OpenSans',
             ),
             decoration: InputDecoration(
               border: InputBorder.none,
@@ -98,7 +101,7 @@ class _LoginPageState extends State<LoginPage> {
                 Icons.email,
                 color: Colors.white,
               ),
-              hintText: 'Enter your Email',
+              hintText: '이메일을 입력해주세요',
               hintStyle: kHintTextStyle,
             ),
           ),
@@ -124,7 +127,6 @@ class _LoginPageState extends State<LoginPage> {
             obscureText: true,
             style: TextStyle(
               color: Colors.white,
-              fontFamily: 'OpenSans',
             ),
             decoration: InputDecoration(
               border: InputBorder.none,
@@ -133,7 +135,7 @@ class _LoginPageState extends State<LoginPage> {
                 Icons.lock,
                 color: Colors.white,
               ),
-              hintText: 'Enter your Password',
+              hintText: '비밀번호를 입력해주세요',
               hintStyle: kHintTextStyle,
             ),
           ),
@@ -142,17 +144,37 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Widget _buildForgotPasswordBtn() {
-    return Container(
-      alignment: Alignment.centerRight,
-      child: FlatButton(
-        onPressed: () => print('Forgot Password Button Pressed'),
-        padding: EdgeInsets.only(right: 0.0),
-        child: Text(
-          'Forgot Password?',
+  Widget _ConfirmPasswordTF() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(
+          'Confirm Password',
           style: kLabelStyle,
         ),
-      ),
+        SizedBox(height: 10.0),
+        Container(
+          alignment: Alignment.centerLeft,
+          decoration: kBoxDecorationStyle,
+          height: 60.0,
+          child: TextField(
+            obscureText: true,
+            style: TextStyle(
+              color: Colors.white,
+            ),
+            decoration: InputDecoration(
+              border: InputBorder.none,
+              contentPadding: EdgeInsets.only(top: 14.0),
+              prefixIcon: Icon(
+                Icons.lock,
+                color: Colors.white,
+              ),
+              hintText: '비밀번호 확인',
+              hintStyle: kHintTextStyle,
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -165,85 +187,18 @@ class _LoginPageState extends State<LoginPage> {
         onPressed: () => print('Login Button Pressed'),
         padding: EdgeInsets.all(15.0),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(30.0),
+          borderRadius: BorderRadius.circular(smartfarmer_auth_padding),
         ),
         color: Colors.white,
         child: Text(
-          'LOGIN',
+          '가입하기',
           style: TextStyle(
             color: Color(0xFF527DAA),
             letterSpacing: 1.5,
             fontSize: 18.0,
             fontWeight: FontWeight.bold,
-            fontFamily: 'OpenSans',
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildSignInWithText() {
-    return Column(
-      children: <Widget>[
-        Text(
-          '- OR -',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.w400,
-          ),
-        ),
-        SizedBox(height: 20.0),
-        Text(
-          'Sign in with',
-          style: kLabelStyle,
-        ),
-      ],
-    );
-  }
-
-  Widget _buildSocialBtn(Function onTap, AssetImage logo) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        height: 60.0,
-        width: 60.0,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black26,
-              offset: Offset(0, 2),
-              blurRadius: 6.0,
-            ),
-          ],
-          image: DecorationImage(
-            image: logo,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSocialBtnRow() {
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: 30.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: <Widget>[
-          _buildSocialBtn(
-            () => print('Login with Facebook'),
-            AssetImage(
-              facebook,
-            ),
-          ),
-          _buildSocialBtn(
-            () => print('Login with KaKao'),
-            AssetImage(
-              kakaotalk,
-            ),
-          ),
-        ],
       ),
     );
   }
@@ -255,7 +210,7 @@ class _LoginPageState extends State<LoginPage> {
         text: TextSpan(
           children: [
             TextSpan(
-              text: 'Don\'t have an Account? ',
+              text: '계정이 있으신가요? ',
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 18.0,
@@ -263,7 +218,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
             TextSpan(
-              text: 'Sign Up',
+              text: '로그인하기',
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 18.0,
