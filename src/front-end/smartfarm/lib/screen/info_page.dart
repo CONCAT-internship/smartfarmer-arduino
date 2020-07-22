@@ -1,7 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:smartfarm/components/body.dart';
 import 'package:smartfarm/constants/smartfarmer_constants.dart';
+import 'package:smartfarm/firebase/database_provider.dart';
 
 class InfoPage extends StatefulWidget {
   @override
@@ -23,8 +25,23 @@ class _InfoPageState extends State<InfoPage> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                Icon(Icons.home, color: blueGradient1, size: 32.0),
-                Icon(Icons.settings, color: Colors.grey, size: 32.0),
+                IconButton(
+                  icon: Icon(Icons.home),
+                  onPressed: () {
+                    databaseProvider.send().then((_) => print("data send"));
+                  },
+                  color: blueGradient1,
+                  iconSize: 32.0,
+                  //size: 32.0,
+                ),
+                IconButton(
+                  icon: Icon(Icons.settings),
+                  onPressed: () {
+                    databaseProvider.recv();
+                  },
+                  color: Colors.grey,
+                  iconSize: 32.0,
+                ),
               ],
             ),
           ),
@@ -33,7 +50,9 @@ class _InfoPageState extends State<InfoPage> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
-        onPressed: (){},
+        onPressed: () {
+          FirebaseAuth.instance.signOut();
+        },
       ),
       appBar: buildAppBar(),
       backgroundColor: bgColor,
