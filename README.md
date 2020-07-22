@@ -1,4 +1,3 @@
-#### Smart Farmer
+#### smartfarmer-arduino
 
-Internship at [CONCAT.Inc](https://concat.kr) in summer, 2020
-
+Arduino module of smartfarmer
