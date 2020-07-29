@@ -1,4 +1,9 @@
-#### Smart Farmer
+# 콘캣 스마트팜 제작
 
-Internship at [CONCAT.Inc](https://concat.kr) in summer, 2020
-
+## hardware
+### 센서 및 모듈
+- PH 센서
+- 조도센서
+- 온도센서
+- 솔레노이드 벨브
+- 이더넷 모듈(ENC28J60)
