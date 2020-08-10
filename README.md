@@ -2,7 +2,7 @@
 
 ## hardware
 ## 보드
-- 아두이노 메가
+- Arduino Mega(ATmega2560)
 
 ### 센서 및 모듈
 - pH 센서
