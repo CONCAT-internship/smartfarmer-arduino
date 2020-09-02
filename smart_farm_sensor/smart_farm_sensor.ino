@@ -1,32 +1,38 @@
+// 2020 08 21
+
 #include <EtherCard.h>
 #include <ArduinoJson.h>
-#include <DHT11.h>
+#include <DHT.h>
 #include <OneWire.h>
 #include <ArduinoUniqueID.h>
+
 #include <EEPROM.h>
 #include "GravityTDS.h"
 #include <DallasTemperature.h>
 
 #define board_rate 115200
-
 #define liquid_temperature_pin 20
-#define humidity_temperature_pin 2
+#define humidity_temperature_pin A3
 #define pH_pin A15
 #define ec_pin A14
 #define liquid_level_pin 45
 #define light_pin A0
-#define fan_pin 26
-#define led_pin 46
+#define fan_pin 30
+#define led_pin 11
+#define pH_down_pin 34
+#define pH_up_pin 35
+#define ec_up_pin 33
 
-#define pH_Offset 0.00
+#define pH_Offset -0.50
 
 //#define PATH    "in" // 테스트용
 #define PATH    "Insert"
 
-#define get_rate 3000 // 3sec
+#define get_rate 60000 // 1min
 #define post_rate 180000 // 3min
+#define pump_rate 800 // 0.8sec
 
-DHT11 dht11(humidity_temperature_pin);
+DHT dht(humidity_temperature_pin, DHT21);
 OneWire ds(liquid_temperature_pin);
 DallasTemperature sensors(&ds);
 GravityTDS gravityTds;
@@ -40,24 +46,32 @@ const char website[] PROGMEM = "asia-northeast1-superfarmers.cloudfunctions.net"
 // POST request 변수
 String uuid;
 float liquid_temperature;
-float temperature;
-float humidity;
-float liquid_flow_rate = 25.5;
+float temperature_value;
+float humidity_value;
 float pH;
 float ec;
 int light;
 boolean liquid_level;
-boolean valve = 0;
+int pH_pump;
+int ec_pump;
 boolean led = 0;
-boolean fan;
+boolean fan = 1;
+
+boolean pH_flag = 0;
+boolean ec_flag = 0;
 
 // GET request 변수
-char query_string[80] = "RecentStatus?uuid=";
+char query_string[80] = "DesiredStatus?uuid=";
 char char_uuid[20];
 
 byte Ethernet::buffer[700];
 uint32_t post_timer = 0;
 uint32_t get_timer = 0;
+
+uint32_t pH_pump_up_timer = 0;
+uint32_t pH_pump_down_timer = 0;
+uint32_t ec_pump_timer = 0;
+
 int pHArray[40];
 int pHArrayIndex = 0;
 
@@ -67,35 +81,37 @@ static void my_callback (byte status, word off, word len) {
   Ethernet::buffer[off + 1000] = 0;
   String fullres = (const char*) Ethernet::buffer + off;
   fullres = fullres.substring(fullres.indexOf("{"), fullres.indexOf("}") + 1);
-  
-  const size_t capacity = JSON_OBJECT_SIZE(3) + 20;
+
+  //  Serial.println(fullres);
+  // 4개의 속성값을 가져옴
+  const size_t capacity = JSON_OBJECT_SIZE(4) + 30;
   DynamicJsonDocument doc(capacity);
   deserializeJson(doc, fullres);
-  valve = doc["velve"];
-  led = doc["led"];
-  fan = doc["fan"];
+  serializeJson(doc, Serial);
+  Serial.println();
 
-  //벨브, led, 펜 조정하는 부분
-  //digitalWrite하자
-  //  if (valve == false) {
-  //    digitalWrite(valve_pin, LOW);
-  //  }
-  //  else {
-  //    digitalWrite(valve_pin, HIGH);
-  //  }
-  //
-    if (led == false) {
-      digitalWrite(led_pin, LOW);
-    }
-    else {
-      digitalWrite(led_pin, HIGH);
-    }
+  boolean led = doc["led"];
+  boolean fan = doc["fan"];
 
-  if (fan == false) {
+
+  if (pH_flag == 0) {
+    pH_pump = doc["pH_pump"];
+    pH_flag = 1;
+  }
+
+  if (ec_flag == 0) {
+    ec_pump = doc["ec_pump"];
+    ec_flag = 1;
+  }
+
+  //fan같은 경우는 LOW일때 켜진다...
+  if (fan) {
     digitalWrite(fan_pin, LOW);
+    fan = true;
   }
   else {
     digitalWrite(fan_pin, HIGH);
+    fan = false;
   }
 }
 
@@ -116,7 +132,8 @@ int read_light() {
 
 
 void read_humidity_and_temperature() {
-  dht11.read(humidity, temperature);
+  humidity_value = dht.readHumidity();
+  temperature_value = dht.readTemperature();
 }
 
 
@@ -139,8 +156,7 @@ float read_ec() {
   gravityTds.setTemperature(liquid_temperature);  // set the temperature and execute temperature compensation
   gravityTds.update();  //sample and calculate
   tdsValue = gravityTds.getTdsValue();  // then get the value
-  tdsValue = round(tdsValue) / 500;
-  tdsValue = round(tdsValue * 10) / 10.0;
+  tdsValue = tdsValue / 500;
   return tdsValue;
 }
 
@@ -219,6 +235,10 @@ void setup () {
   if (!ether.dnsLookup(website))
     Serial.println("DNS failed");
   ether.printIp("SRV: ", ether.hisip);
+  //  ether.persistTcpConnection(true);
+
+  // dht setting
+  dht.begin();
 
   // 핀 설정
   // 수위
@@ -237,7 +257,18 @@ void setup () {
   // led
   pinMode(led_pin, OUTPUT);
   digitalWrite(led_pin, HIGH);
-  
+
+  //pump
+  pinMode(pH_up_pin, OUTPUT);
+  digitalWrite(pH_up_pin, LOW);
+
+  pinMode(pH_down_pin, OUTPUT);
+  digitalWrite(pH_down_pin, LOW);
+
+  pinMode(ec_up_pin, OUTPUT);
+  digitalWrite(ec_up_pin, LOW);
+
+
   // read_uuid
   read_uuid();
 
@@ -251,28 +282,67 @@ void loop () {
   ether.packetLoop(ether.packetReceive());
   // 테스트용 포트번호
   //  ether.hisport = 5000;
-  
+
   // pH
   pH = read_pH();
 
+  // 시간 중복 방지
   if (get_timer == post_timer) {
     post_timer += 1000;
   }
 
+  //
   if (millis() > get_timer) {
     get_timer = millis() + get_rate;
     ether.browseUrl(PSTR("/"), query_string, website, my_callback);
   }
-  
+
+  // pH값을 높이거나 낮춰야할때
+  if (pH_pump != 0) {
+    // pH up
+    if (pH_pump > 0) {
+      digitalWrite(pH_up_pin, HIGH);
+      pH_pump = 0;
+      pH_pump_up_timer = millis();
+    }
+    // pH down
+    if (pH_pump < 0) {
+      digitalWrite(pH_down_pin, HIGH);
+      pH_pump = 0;
+      pH_pump_down_timer = millis();
+    }
+  }
+  // pH pump off
+  if (millis() - pH_pump_up_timer > pump_rate) {
+    digitalWrite(pH_up_pin, LOW);
+  }
+  if (millis() - pH_pump_down_timer > pump_rate) {
+    digitalWrite(pH_down_pin, LOW);
+  }
+
+  // ec pump on
+  if (ec_pump != 0) {
+    // ec pump up
+    digitalWrite(ec_up_pin, HIGH);
+    ec_pump = 0;
+    ec_pump_timer = millis();
+  }
+  // ec pump off
+  if (millis() - ec_pump_timer > pump_rate) {
+    digitalWrite(ec_up_pin, LOW);
+  }
+
   if (millis() > post_timer) {
     post_timer = millis() + post_rate;
+    pH_flag = 0;
+    ec_flag = 0;
 
     // liquid_temperature
     liquid_temperature = read_liquid_temperature();
 
     // humidity_and_temperature
     read_humidity_and_temperature();
-    temperature = round(temperature * 10) / 10.0;
+    temperature_value = round(temperature_value * 10) / 10.0;
 
     // ec
     ec = read_ec();
@@ -287,18 +357,16 @@ void loop () {
     // json create
     byte sd = stash.create();
     char jsondata[250];
-    const size_t capacity = JSON_OBJECT_SIZE(12) + 50;
+    const size_t capacity = JSON_OBJECT_SIZE(10) + 50;
     DynamicJsonDocument doc(capacity);
     doc["uuid"] = uuid;
     doc["liquid_temperature"] = liquid_temperature;
-    doc["temperature"] = temperature;
-    doc["humidity"] = humidity;
-    doc["liquid_flow_rate"] = liquid_flow_rate;
+    doc["temperature"] = temperature_value;
+    doc["humidity"] = humidity_value;
     doc["pH"] = pH;
     doc["ec"] = ec;
     doc["light"] = light;
     doc["liquid_level"] = liquid_level;
-    doc["valve"] = valve;
     doc["led"] = led;
     doc["fan"] = fan;
 
